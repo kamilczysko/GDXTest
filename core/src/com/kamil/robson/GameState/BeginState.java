@@ -31,9 +31,9 @@ public class BeginState extends State{
 
 	@Override
 	public void handleInput() {
-		if(Gdx.input.justTouched()){
+		if(Gdx.input.justTouched())
 			this.gsm.set(new PlayState(gsm));
-		}
+		
 	}
 
 	@Override

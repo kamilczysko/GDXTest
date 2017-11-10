@@ -18,7 +18,7 @@ public class RobsonGame extends ApplicationAdapter {
 		gsm = new GameStateManager();
 		gsm.push(new BeginState(gsm));
 		
-		Gdx.gl.glClearColor(1, 0, 0, 1);
+		Gdx.gl.glClearColor(0, 0, 0, 1);
 	}
 
 	@Override

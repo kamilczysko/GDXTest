@@ -12,48 +12,62 @@ public class Faggot {
 	private Vector2 velocity;
 	private Texture tex;
 	
-	public static final float GRAV = -15;
-	public static final float SIDE_JUMP = 250;
-	
-	public Faggot(float x, float y){
-		
+	public boolean collideWithFloor = false;
+	public boolean die = false;
+
+	public static final float GRAV = -20;
+	public static final float SIDE_JUMP = 150;
+	public static final float VERTICAL_JUMP = 700;
+
+	public Faggot(float x, float y) {
+
+		die = false;
 		this.tex = new Texture(Gdx.files.internal("ryj.png"));
-		this.position = new Vector2(x,y);
-		this.velocity = new Vector2(0,0);
-		this.rectangle = new Rectangle(position.x, position.y, 34 , 30);
+		this.position = new Vector2(x, y);
+		this.velocity = new Vector2(0, 0);
+		this.rectangle = new Rectangle(position.x, position.y, 34, 30);
 	}
-	
-	public void update(float dt){
-		this.velocity.add(0,GRAV);
+
+	public void update(float dt) {
+
+		this.velocity.add(0, GRAV);
 		this.velocity.scl(dt);
+
+		if (collideWithFloor && this.velocity.y < 0)
+			setZeroVelocity();
 		
 		this.position.add(this.velocity.x, this.velocity.y);
-		velocity.scl(1/dt);
+		velocity.scl(1 / dt);
 		rectangle.setPosition(this.position);
 	}
-	
-	public void jump(float sideJump){
-		float verticalVelocity = this.velocity.y;
-		
-			verticalVelocity = 850;
-		
-			this.velocity.add(sideJump, verticalVelocity);
+
+	public void jump() {
+		setZeroVelocity();
+
+		if (Gdx.input.getX() >= Gdx.graphics.getWidth() / 2)
+			this.velocity.add(SIDE_JUMP, VERTICAL_JUMP);
+		else
+			this.velocity.add(-SIDE_JUMP, VERTICAL_JUMP);
 	}
 	
-	public float getX(){
+	private void setZeroVelocity(){
+		this.velocity.set(0, 0);
+	}
+
+	public float getX() {
 		return this.position.x;
 	}
-	
-	public float getY(){
+
+	public float getY() {
 		return this.position.y;
 	}
-	
-	public Rectangle getBounds(){
+
+	public Rectangle getBounds() {
 		return rectangle;
 	}
-	
-	public Texture getTex(){
+
+	public Texture getTex() {
 		return tex;
 	}
-	
+
 }
