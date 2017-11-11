@@ -12,13 +12,13 @@ import com.kamil.robson.Sprites.GapObstacle;
 
 public class PlayState extends State {
 
-	public static float STEP = 0.5f;
-	public static final float SPACE_BETWEEN_OBSTACLES = 600;
+	public static float STEP = 0.9f;
 
 	private BitmapFont font;
 	private Faggot fag;
 	private Floor floor;
 	private List<GapObstacle> obstacles;
+	private float deltaDist = 0.0f;
 
 	public PlayState(GameStateManager gsm) {
 		super(gsm);
@@ -31,30 +31,40 @@ public class PlayState extends State {
 	@Override
 	public void update(float dt) {
 
+		if (fag.die)
+			this.gsm.push(new DeadState(gsm));
+
 		handleInput();
 		checkFagCollideWithFloor();
 		if (canStartMoveObstacles()) {
+
 			if (!floor.isDisposed)
 				floor.moveDown();
-			
-			if(obstacles.isEmpty())
+
+			if (obstacles.isEmpty())
 				obstacles.add(new GapObstacle());
-			
-			for(int i = 0; i < obstacles.size(); i++){
+			List<GapObstacle> toRemove = new ArrayList<GapObstacle>();
+			for (int i = 0; i < obstacles.size(); i++) {
 				GapObstacle obs = obstacles.get(i);
-				System.out.println("update+" +obs.getVerticalPosition());
-				
-				if(obs.getVerticalPosition() % SPACE_BETWEEN_OBSTACLES == 0){
+
+				obs.update(0, deltaDist);
+
+				this.deltaDist = 0.0f;
+
+				if (obs.getVerticalPosition() == 150) {
 					obstacles.add(new GapObstacle());
-					System.out.println("new Obs");
 				}
-//				if(obs.getVerticalPosition() <= 0.0)
-//					obstacles.remove(obs);
-				obs.update(0);
+				if (obs.getVerticalPosition() <= 0.0) {
+					toRemove.add(obs);
+					obs.dispose();
+				}
+
+				obs.checkCollisionWithFag(fag);
+
 			}
-			
-			
-			System.out.println("obstacles "+ obstacles.size());
+
+			obstacles.removeAll(toRemove);
+
 		}
 
 		fag.update(dt);
@@ -83,10 +93,10 @@ public class PlayState extends State {
 		sb.draw(floor.getTex(), floor.getX(), floor.getY() - floor.getTex().getHeight());
 
 		for (GapObstacle obs : obstacles) {
-			sb.draw(obs.getTex()[0], obs.getRec()[0].getWidth() - Gdx.graphics.getWidth(),
+			sb.draw(obs.getTex()[0], obs.getRec()[0].getWidth() - obs.getTex()[0].getWidth(),
 					obs.getRec()[0].getY() - obs.getTex()[0].getHeight());
-			
-			sb.draw(obs.getTex()[1], obs.getRec()[1].getX(), obs.getRec()[1].getY()-obs.getTex()[1].getHeight());
+
+			sb.draw(obs.getTex()[1], obs.getRec()[1].getX(), obs.getRec()[1].getY() - obs.getTex()[1].getHeight());
 		}
 		sb.end();
 
@@ -94,8 +104,13 @@ public class PlayState extends State {
 
 	@Override
 	public void handleInput() {
-		if (Gdx.input.justTouched())
+		if (Gdx.input.justTouched()) {
 			fag.jump();
+
+			if (fag.getY() > Gdx.graphics.getHeight() / 2-150)
+				this.deltaDist = 50;
+
+		}
 	}
 
 	@Override

@@ -6,11 +6,10 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
-import com.kamil.robson.GameState.PlayState;
 
 public class GapObstacle {
 	
-	public static final float GAP = 100;
+	public static final float GAP = 150;
 	
 	private Vector2 position;
 	private Texture[] tex;
@@ -30,7 +29,7 @@ public class GapObstacle {
 	}
 	
 	private void makeGap(){
-		int gapPos = random.nextInt(400)+200;
+		int gapPos = random.nextInt(300)+200;
 		rectangles[0] = makeRec(0, gapPos);
 		rectangles[1] = makeRec(gapPos+GAP, Gdx.graphics.getWidth());
 	}
@@ -46,8 +45,9 @@ public class GapObstacle {
 		return tex;
 	}
 	
-	public void update(float dt){
-		this.position.y -= PlayState.STEP;
+	public void update(float dt, float step){
+		this.position.y -= step;
+		
 
 		rectangles[0].y = position.y;
 		rectangles[1].y = position.y;
@@ -63,8 +63,10 @@ public class GapObstacle {
 	
 	public void checkCollisionWithFag(Faggot fag){
 		
-		if(rectangles[0].overlaps(fag.getBounds()) || rectangles[1].overlaps(fag.getBounds()))
+		if(rectangles[0].overlaps(fag.getBounds()) || rectangles[1].overlaps(fag.getBounds())){
 			fag.die = true;
+			fag.hitHead();
+		}
 	}
 	
 	public void dispose(){

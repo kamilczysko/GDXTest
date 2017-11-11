@@ -17,7 +17,7 @@ public class Faggot {
 
 	public static final float GRAV = -20;
 	public static final float SIDE_JUMP = 150;
-	public static final float VERTICAL_JUMP = 700;
+	public static final float VERTICAL_JUMP = 550;
 
 	public Faggot(float x, float y) {
 
@@ -32,6 +32,8 @@ public class Faggot {
 
 		this.velocity.add(0, GRAV);
 		this.velocity.scl(dt);
+		
+		isFagInScreen();
 
 		if (collideWithFloor && this.velocity.y < 0)
 			setZeroVelocity();
@@ -39,6 +41,13 @@ public class Faggot {
 		this.position.add(this.velocity.x, this.velocity.y);
 		velocity.scl(1 / dt);
 		rectangle.setPosition(this.position);
+	}
+	
+	private void isFagInScreen(){
+		float xPos = this.position.x;
+		float yPos = this.position.y;
+		if(yPos <= 0 || xPos <= 0 || xPos > Gdx.graphics.getWidth())
+			die = true;
 	}
 
 	public void jump() {
@@ -48,6 +57,10 @@ public class Faggot {
 			this.velocity.add(SIDE_JUMP, VERTICAL_JUMP);
 		else
 			this.velocity.add(-SIDE_JUMP, VERTICAL_JUMP);
+	}
+	
+	public void hitHead(){
+		this.velocity.y = -150;
 	}
 	
 	private void setZeroVelocity(){
